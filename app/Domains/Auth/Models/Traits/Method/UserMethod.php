@@ -98,6 +98,17 @@ trait UserMethod
      */
     public function getAvatar($size = null)
     {
-        return 'https://gravatar.com/avatar/'.md5(strtolower(trim($this->email))).'?s='.config('boilerplate.avatar.size', $size).'&d=mp';
+        return 'https://gravatar.com/avatar/' . md5(strtolower(trim($this->email))) . '?s=' . config('boilerplate.avatar.size', $size) . '&d=mp';
+    }
+
+    public function getBrandAccounts()
+    {
+        $company = $this->companyUser?->company;
+
+        if (!$company) {
+            return []; // or return an empty array []
+        }
+        // return $company->brandAccounts()->get()->toArray();
+        return $company->brandAccounts()->get()->map(fn ($item) => $item)->toArray();
     }
 }

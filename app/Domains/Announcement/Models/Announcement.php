@@ -13,7 +13,8 @@ use Spatie\Activitylog\Traits\LogsActivity;
  */
 class Announcement extends Model
 {
-    use AnnouncementScope,
+    use
+        AnnouncementScope,
         HasFactory;
 
     public const TYPE_FRONTEND = 'frontend';
@@ -48,6 +49,17 @@ class Announcement extends Model
     protected $casts = [
         'enabled' => 'boolean',
     ];
+
+    public function __construct(array $attributes = array())
+    {
+        /**
+         * The database table used by the model.
+         *
+         * @var string
+         */
+        $this->table = config('boilerplate.database.admin_user_db') . '.announcements';
+        parent::__construct($attributes);
+    }
 
     /**
      * Create a new factory instance for the model.

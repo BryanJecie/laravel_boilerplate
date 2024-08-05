@@ -26,6 +26,14 @@ class Role extends SpatieRole
         'permissions',
     ];
 
+    protected $connection = 'mysql_user';
+
+    public function __construct(array $attributes = array())
+    {
+        $this->table = config('boilerplate.database.admin_user_db') . '.roles';
+        parent::__construct($attributes);
+    }
+
     /**
      * Create a new factory instance for the model.
      *

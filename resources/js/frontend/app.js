@@ -1,54 +1,33 @@
+/**
+ * First we will load all of this project's JavaScript dependencies which
+ * includes Vue and other libraries. It is a great starting point when
+ * building robust, powerful web applications using Vue and Laravel.
+ */
 
-window.$ = window.jQuery = require('jquery');
-window.Swal = require('sweetalert2');
+require('../bootstrap');
+require('../plugins');
 
-// CoreUI
-require('@coreui/coreui');
+import Vue from 'vue';
 
-// Boilerplate
-require('@js/bootstrap');
-require('@js/plugins');
+/**
+ * The following block of code may be used to automatically register your
+ * Vue components. It will recursively scan this directory for the Vue
+ * components and automatically register them with their "basename".
+ *
+ * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
+ */
 
-import Vue from 'vue'
-import vSelect from "vue-select";
-
-import $ from "jquery";
-window.$ = window.jQuery = $;
-
-import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
-
-// momentJS
-import moment from 'moment'
-moment.locale('en');
-Vue.prototype.moment = moment;
-
-// import CKEditor from '@ckeditor/ckeditor5-vue2';
-Vue.component("v-select", vSelect);
-
-Vue.use(BootstrapVue)
-// Optionally install the BootstrapVue icon components plugin
-Vue.use(IconsPlugin)
+// const files = require.context('./', true, /\.vue$/i)
+// files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
-// import 'bootstrap/dist/css/bootstrap.css'
-import 'bootstrap-vue/dist/bootstrap-vue.css'
-import "vue-select/dist/vue-select.css";
-
-// import "jquery-confirm";
-import store from '@js/store';
-import '@js/filters';
-
-// Load Pages here
-const files = require.context('./views', true, /\.js$/i)
-files.keys().map(key => {
-    return key.split('/').pop().split('.')[0], files(key).default
-})
+/**
+ * Next, we will create a fresh Vue application instance and attach it to
+ * the page. Then, you may begin adding components to this application
+ * or customize the JavaScript scaffolding to fit your unique needs.
+ */
 
 const app = new Vue({
     el: '#app',
-    store,
-    created() {
-        store.dispatch("user/loadUser");
-    },
 });

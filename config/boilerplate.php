@@ -188,4 +188,28 @@ return [
     |
     */
     'testing' => env('APP_TESTING', false),
+
+    /*
+    |--------------------------------------------------------------------------
+    | Databases
+    |--------------------------------------------------------------------------
+    |
+    | Defining a custom database configuration for Laravel Boilerplate. Specifically, it is setting
+    | the name of the database to be used for.
+    |
+    */
+    'database' => [
+        'admin_app_db' => env('DB_DATABASE'),
+        'admin_user_db' => env('DB_DATABASE_USER'),
+    ],
+
+    'softwares' => [
+        env('SCHEDULING_CENTRAL', 'Scheduling Central'),
+        env('LINK_BUILDER', 'Link Builder'),
+        env('ANALYTICS', 'Analytics'),
+    ],
+
+    'base_uri' => [
+        'konnektive' => env('API_KONNEKTIVE', 'https://api.konnektive.com'),
+    ]
 ];

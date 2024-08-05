@@ -100,6 +100,13 @@ return [
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
         ],
+
+        'gads_postback_ads' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/gads_postback.log'),
+            'level' => 'info',
+            'days' => 15
+        ]
     ],
 
 ];

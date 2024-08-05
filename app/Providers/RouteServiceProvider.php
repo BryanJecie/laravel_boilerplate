@@ -40,6 +40,11 @@ class RouteServiceProvider extends ServiceProvider
     {
         $this->configureRateLimiting();
 
+        // To be able to restore a user, since the default binding is a find and would result in a 404
+        Route::bind('deletedUser', function ($id) {
+            return User::onlyTrashed()->find($id);
+        });
+
         $this->routes(function () {
             Route::prefix('api')
                 ->middleware('api')
@@ -55,11 +60,6 @@ class RouteServiceProvider extends ServiceProvider
                 ->group(function (Router $router) {
                     $router->impersonate();
                 });
-        });
-
-        // To be able to restore a user, since the default binding is a find and would result in a 404
-        Route::bind('deletedUser', function ($id) {
-            return User::onlyTrashed()->find($id);
         });
     }
 

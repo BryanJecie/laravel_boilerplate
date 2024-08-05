@@ -1,5 +1,5 @@
 <div class="table-responsive">
-    <table class="table bg-white table-striped table-hover table-bordered mb-0">
+    <table class="table table-striped table-hover table-bordered mb-0">
         <tr>
             <th>@lang('Type')</th>
             <td>@include('backend.auth.user.includes.type', ['user' => $logged_in_user])</td>

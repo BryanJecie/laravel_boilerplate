@@ -1,11 +1,11 @@
 <template>
-  <span>SUBAYBUS -APP </span>
+    <span>Laravel Boilerplate</span>
 </template>
 
 <script>
-export default {
-  mounted() {
-    console.log("Component mounted.");
-  },
-};
+    export default {
+        mounted() {
+            console.log('Component mounted.')
+        }
+    }
 </script>

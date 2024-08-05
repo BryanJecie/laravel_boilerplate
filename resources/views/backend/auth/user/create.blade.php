@@ -77,9 +77,9 @@
                             </div><!--form-check-->
                         </div>
                     </div><!--form-group-->
-                    {{--
+
                     <div x-data="{ emailVerified: false }">
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="email_verified" class="col-md-2 col-form-label">@lang('E-mail Verified')</label>
 
                             <div class="col-md-10">
@@ -87,9 +87,9 @@
                                     <input type="checkbox" name="email_verified" id="email_verified" value="1"
                                         class="form-check-input" x-on:click="emailVerified = !emailVerified"
                                         {{ old('email_verified') ? 'checked' : '' }} />
-                                </div><!--form-check-->
+                                </div>
                             </div>
-                        </div><!--form-group-->
+                        </div>
 
                         <div x-show="!emailVerified">
                             <div class="form-group row">
@@ -101,11 +101,11 @@
                                         <input type="checkbox" name="send_confirmation_email" id="send_confirmation_email"
                                             value="1" class="form-check-input"
                                             {{ old('send_confirmation_email') ? 'checked' : '' }} />
-                                    </div><!--form-check-->
+                                    </div>
                                 </div>
-                            </div><!--form-group-->
-                        </div>
-                    </div> --}}
+                            </div>
+                        </div> --}}
+                    </div>
 
                     @include('backend.auth.includes.roles')
 

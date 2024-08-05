@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class Kernel.
@@ -15,9 +16,7 @@ class Kernel extends ConsoleKernel
      *
      * @var array
      */
-    protected $commands = [
-        //
-    ];
+    protected $commands = [];
 
     /**
      * Define the application's command schedule.
@@ -27,8 +26,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('activitylog:clean')->daily();
+        // Clear Logs
+        $this->clearLogs($schedule);
     }
+
 
     /**
      * Register the commands for the application.
@@ -37,8 +38,24 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
+    }
+
+    protected function clearLogs(Schedule $schedule)
+    {
+        $schedule->command('activitylog:clean')
+            ->daily();
+
+        $schedule->command('telescope:clear')
+            ->weekly()
+            ->days([1, 3, 5])
+            ->at('2:00');
+
+        $schedule->command('log-viewer:clear')
+            ->weekly()
+            ->days([1, 3, 5])
+            ->at('1:00');
     }
 }

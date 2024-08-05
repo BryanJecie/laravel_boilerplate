@@ -5,7 +5,6 @@ namespace App\Domains\Auth\Http\Requests\Backend\User;
 use App\Domains\Auth\Rules\UnusedPassword;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Foundation\Http\FormRequest;
-use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
 
 /**
  * Class UpdateUserPasswordRequest.
@@ -19,7 +18,7 @@ class UpdateUserPasswordRequest extends FormRequest
      */
     public function authorize()
     {
-        return ! ($this->user->isMasterAdmin() && ! $this->user()->isMasterAdmin());
+        return !($this->user->isMasterAdmin() && !$this->user()->isMasterAdmin());
     }
 
     /**
@@ -35,7 +34,6 @@ class UpdateUserPasswordRequest extends FormRequest
                     'max:100',
                     new UnusedPassword((int) $this->segment(4)),
                 ],
-                PasswordRules::changePassword($this->email)
             ),
         ];
     }

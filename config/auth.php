@@ -1,6 +1,5 @@
 <?php
 
-
 return [
 
     /*
@@ -42,10 +41,11 @@ return [
             'provider' => 'users',
         ],
 
-        // 'employee' => [
-        //     'driver' => 'session',
-        //     'model' => 'employees',
-        // ],
+        'api' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+        ],
+
     ],
 
     /*
@@ -70,11 +70,6 @@ return [
             'driver' => 'eloquent',
             'model' => App\Domains\Auth\Models\User::class,
         ],
-
-        // 'employees' => [
-        //     'driver' => 'eloquent',
-        //     'model' => App\Domains\Employee\Models\Employee::class,
-        // ],
 
         // 'users' => [
         //     'driver' => 'database',
@@ -119,4 +114,8 @@ return [
 
     'password_timeout' => 10800,
 
+
+    'login' => [
+        'expire' => 10800
+    ],
 ];

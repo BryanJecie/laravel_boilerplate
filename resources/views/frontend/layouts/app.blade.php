@@ -16,28 +16,22 @@
     <link href="{{ mix('css/frontend.css') }}" rel="stylesheet">
     <livewire:styles />
     @stack('after-styles')
-
-    @auth
-        <meta name="sanctum-token" content="{{ $logged_in_user->createToken($logged_in_user->email)->plainTextToken }}">
-    @endauth
-
 </head>
 
 <body>
-
     <div id="app">
-
         @include('frontend.includes.nav')
-        {{-- @if (!Route::is('frontend.biometric.index'))
-            @include('includes.partials.read-only')
-            @include('includes.partials.logged-in-as')
-            @include('includes.partials.announcements')
-
-            @include('frontend.includes.nav')
-            @include('includes.partials.messages')
-        @endif --}}
-
         <main>
+            <div class="container mt-3 mb-1">
+                @include('includes.partials.read-only')
+                @include('includes.partials.logged-in-as')
+                @include('includes.partials.announcements')
+
+                <div class="mt-1 mb-0">
+                    @include('includes.partials.messages')
+                </div>
+            </div>
+
             @yield('content')
         </main>
     </div><!--app-->

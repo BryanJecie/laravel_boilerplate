@@ -6,10 +6,14 @@ use App\Domains\Auth\Events\User\UserCreated;
 use App\Domains\Auth\Events\User\UserDeleted;
 use App\Domains\Auth\Events\User\UserDestroyed;
 use App\Domains\Auth\Events\User\UserLoggedIn;
+use App\Domains\Auth\Events\User\UserLoggedOut;
 use App\Domains\Auth\Events\User\UserRestored;
 use App\Domains\Auth\Events\User\UserStatusChanged;
 use App\Domains\Auth\Events\User\UserUpdated;
+use Carbon\Carbon;
 use Illuminate\Auth\Events\PasswordReset;
+use Rappasoft\LaravelAuthenticationLog\Models\AuthenticationLog;
+use Rappasoft\LaravelAuthenticationLog\Notifications\NewDevice;
 
 /**
  * Class UserEventListener.
@@ -22,11 +26,71 @@ class UserEventListener
     public function onLoggedIn($event)
     {
         // Update the logging in users time & IP
-        $event->user->update([
+        $user = $event->user;
+        $ip = request()->ip();
+        $userAgent = request()->userAgent();
+        $known = $user->authentications()->whereIpAddress($ip)->whereUserAgent($userAgent)->whereLoginSuccessful(true)->first();
+        $newUser = Carbon::parse($user->{$user->getCreatedAtColumn()})->diffInMinutes(Carbon::now()) < 1;
+
+        $log = $user->authentications()->create([
+            'ip_address' => $ip,
+            'user_agent' => $userAgent,
+            'login_at' => now(),
+            'login_successful' => true,
+            'location' => config('authentication-log.notifications.new-device.location') ? optional(geoip()->getLocation($ip))->toArray() : null,
+        ]);
+
+        $user->update([
             'last_login_at' => now(),
             'last_login_ip' => request()->getClientIp(),
         ]);
+
+        if (!$known && !$newUser && config('authentication-log.notifications.new-device.enabled')) {
+            $newDevice = config('authentication-log.notifications.new-device.template') ?? NewDevice::class;
+            $user->notify(new $newDevice($log));
+        }
     }
+
+    // /**
+    //  * @param $event
+    //  */
+    // public function onLoggedIn($event)
+    // {
+    //     // Update the logging in users time & IP
+    // $event->user->update([
+    //     'last_login_at' => now(),
+    //     'last_login_ip' => request()->getClientIp(),
+    // ]);
+    // }
+
+    /**
+     * @param $event
+     */
+    public function onLoggedOut($event)
+    {
+        if (!$event instanceof UserLoggedOut) {
+            return;
+        }
+
+        if ($event->user) {
+            $user = $event->user;
+            $ip = request()->ip();
+            $userAgent = request()->userAgent();
+            $log = $user->authentications()->whereIpAddress($ip)->whereUserAgent($userAgent)->orderByDesc('login_at')->first();
+
+            if (!$log) {
+                $log = new AuthenticationLog([
+                    'ip_address' => $ip,
+                    'user_agent' => $userAgent,
+                ]);
+            }
+
+            $log->logout_at = now();
+
+            $user->authentications()->save($log);
+        }
+    }
+
 
     /**
      * @param $event
@@ -115,7 +179,7 @@ class UserEventListener
     {
         activity('user')
             ->performedOn($event->user)
-            ->log(':causer.name '.($event->status === 0 ? 'deactivated' : 'reactivated').' user :subject.name');
+            ->log(':causer.name ' . ($event->status === 0 ? 'deactivated' : 'reactivated') . ' user :subject.name');
     }
 
     /**
@@ -163,6 +227,11 @@ class UserEventListener
         $events->listen(
             UserStatusChanged::class,
             'App\Domains\Auth\Listeners\UserEventListener@onStatusChanged'
+        );
+
+        $events->listen(
+            UserLoggedOut::class,
+            'App\Domains\Auth\Listeners\UserEventListener@onLoggedOut'
         );
     }
 }

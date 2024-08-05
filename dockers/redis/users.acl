@@ -1,0 +1,2 @@
+user default on nopass ~* +@all
+user restricted_user on >b=p£8sesHHI11w1[y[h~ ~* -@all +get +set

@@ -32,6 +32,8 @@ class AnnouncementService extends BaseService
      */
     public function getForFrontend()
     {
+        return collect([]);
+
         return $this->model::enabled()
             ->forArea($this->model::TYPE_FRONTEND)
             ->inTimeFrame()

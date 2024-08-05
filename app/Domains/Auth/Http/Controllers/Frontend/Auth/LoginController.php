@@ -7,7 +7,8 @@ use App\Rules\Captcha;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use Illuminate\Http\Request;
-use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
+use Password;
+
 
 /**
  * Class LoginController.
@@ -26,8 +27,6 @@ class LoginController
     */
 
     use AuthenticatesUsers;
-
-
 
     /**
      * Where to redirect users after login.
@@ -61,39 +60,22 @@ class LoginController
     {
         $request->validate([
             $this->username() => ['required', 'max:255', 'string'],
-            'password' => array_merge(['max:100'], PasswordRules::login()),
+            // 'password' => array_merge(['max:100'], PasswordRules::login()),
+
+            'password'         => [
+                'required', 'max:255',  'string'
+                // ->mixedCase()
+                // ->numbers()
+                // ->symbols()
+                // ->uncompromised()
+            ],
+
             'g-recaptcha-response' => ['required_if:captcha_status,true', new Captcha],
+
+
         ], [
             'g-recaptcha-response.required_if' => __('validation.required', ['attribute' => 'captcha']),
         ]);
-
-
-        // // If the class is using the ThrottlesLogins trait, we can automatically throttle
-        // // the login attempts for this application. We'll key this by the username and
-        // // the IP address of the client making these requests into this application.
-        // if (
-        //     method_exists($this, 'hasTooManyLoginAttempts') &&
-        //     $this->hasTooManyLoginAttempts($request)
-        // ) {
-        //     $this->fireLockoutEvent($request);
-
-        //     return $this->sendLockoutResponse($request);
-        // }
-
-        // if ($this->attemptLogin($request)) {
-        //     if ($request->hasSession()) {
-        //         $request->session()->put('auth.password_confirmed_at', time());
-        //     }
-
-        //     return $this->sendLoginResponse($request);
-        // }
-
-        // // If the login attempt was unsuccessful we will increment the number of attempts
-        // // to login and redirect the user back to the login form. Of course, when this
-        // // user surpasses their maximum number of attempts they will get locked out.
-        // $this->incrementLoginAttempts($request);
-
-        // return $this->sendFailedLoginResponse($request);
     }
 
     /**
@@ -107,6 +89,7 @@ class LoginController
      */
     protected function attemptLogin(Request $request)
     {
+        // dd($this->credentials($request));
         try {
             return $this->guard()->attempt(
                 $this->credentials($request),
@@ -132,6 +115,12 @@ class LoginController
             auth()->logout();
 
             return redirect()->route('frontend.auth.login')->withFlashDanger(__('Your account has been deactivated.'));
+        }
+
+        if (!$user->isMasterAdmin()) {
+            auth()->logout();
+
+            return redirect()->route('frontend.auth.login')->withFlashDanger(__('You do not have access to do that. Only Super Admin can do loggin in.'));
         }
 
         event(new UserLoggedIn($user));

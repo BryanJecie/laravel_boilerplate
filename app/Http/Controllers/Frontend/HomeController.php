@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers\Frontend;
 
+use App\Services\MaropostApi\MaropostApiService;
+use App\Services\NotionApi\NotionApiService;
+
 /**
  * Class HomeController.
  */
@@ -12,7 +15,11 @@ class HomeController
      */
     public function index()
     {
-        return view('frontend.index');
-        // return redirect()->route('frontend.biometric.index');
+        $appName = appName();
+
+        return response()->json([
+            "message" => "Welcome to {$appName}. ✔"
+        ]);
+        // return view('frontend.index');
     }
 }

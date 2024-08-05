@@ -44,10 +44,10 @@
                     <td>@include('backend.auth.user.includes.verified', ['user' => $user])</td>
                 </tr>
 
-                {{-- <tr>
+                <tr>
                     <th>@lang('2FA')</th>
                     <td>@include('backend.auth.user.includes.2fa', ['user' => $user])</td>
-                </tr> --}}
+                </tr>
 
                 <tr>
                     <th>@lang('Timezone')</th>
@@ -57,7 +57,7 @@
                 <tr>
                     <th>@lang('Last Login At')</th>
                     <td>
-                        @if ($user->last_login_at)
+                        @if($user->last_login_at)
                             @displayDate($user->last_login_at)
                         @else
                             @lang('N/A')
@@ -99,7 +99,7 @@
                 <strong>@lang('Account Created'):</strong> @displayDate($user->created_at) ({{ $user->created_at->diffForHumans() }}),
                 <strong>@lang('Last Updated'):</strong> @displayDate($user->updated_at) ({{ $user->updated_at->diffForHumans() }})
 
-                @if ($user->trashed())
+                @if($user->trashed())
                     <strong>@lang('Account Deleted'):</strong> @displayDate($user->deleted_at) ({{ $user->deleted_at->diffForHumans() }})
                 @endif
             </small>

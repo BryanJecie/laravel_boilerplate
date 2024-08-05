@@ -2,6 +2,9 @@
 
 namespace App\Domains\Auth\Models\Traits\Attribute;
 
+use App\Overrides\AuthenticationLog;
+use Core\settings\companies\models\CompanyUser;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -19,8 +22,8 @@ trait UserAttribute
         $this->attributes['password'] =
             (strlen($password) === 60 && preg_match('/^\$2y\$/', $password)) ||
             (strlen($password) === 95 && preg_match('/^\$argon2i\$/', $password)) ?
-                $password :
-                Hash::make($password);
+            $password :
+            Hash::make($password);
     }
 
     /**
@@ -40,7 +43,7 @@ trait UserAttribute
             return 'All';
         }
 
-        if (! $this->permissions->count()) {
+        if (!$this->permissions->count()) {
             return 'None';
         }
 
@@ -57,7 +60,7 @@ trait UserAttribute
             return 'All';
         }
 
-        if (! $this->roles->count()) {
+        if (!$this->roles->count()) {
             return 'None';
         }
 
@@ -66,5 +69,44 @@ trait UserAttribute
                 return ucwords($role);
             })
             ->implode('<br/>');
+    }
+
+    public function getIsOnlineAttribute()
+    {
+        $latestAuthentication = AuthenticationLog::latestAuthentication($this->id);
+
+        if (!$latestAuthentication) {
+            return false;
+        }
+
+        if ($latestAuthentication->logout_at) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function loggedOut(): Attribute
+    {
+        return new Attribute(function () {
+            return $this->latestAuthentication()->first()?->logout_at ? true : false;
+        });
+    }
+
+    public  function fullName(): Attribute
+    {
+        return new Attribute(function () {
+            $firstName = $this->first_name ?? "";
+            $lastName = $this->last_name ?? "";
+            return "{$firstName} {$lastName}";
+        });
+    }
+
+    public function hasCompany(): Attribute
+    {
+        return new Attribute(function () {
+            $company = CompanyUser::where('user_id', $this->id)->first();
+            return $company?->company;
+        });
     }
 }

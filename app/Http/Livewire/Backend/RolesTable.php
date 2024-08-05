@@ -3,6 +3,7 @@
 namespace App\Http\Livewire\Backend;
 
 use App\Domains\Auth\Models\Role;
+use App\Domains\Auth\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Rappasoft\LaravelLivewireTables\DataTableComponent;
 use Rappasoft\LaravelLivewireTables\Views\Column;
@@ -12,6 +13,13 @@ use Rappasoft\LaravelLivewireTables\Views\Column;
  */
 class RolesTable extends DataTableComponent
 {
+    protected $model = User::class;
+
+    public function configure(): void
+    {
+        $this->setPrimaryKey('id');
+    }
+
     /**
      * @return Builder
      */
@@ -29,10 +37,10 @@ class RolesTable extends DataTableComponent
                 ->sortable(),
             Column::make(__('Name'))
                 ->sortable(),
-            Column::make(__('Permissions')),
-            Column::make(__('Number of Users'), 'users_count')
-                ->sortable(),
-            Column::make(__('Actions')),
+            // Column::make(__('Permissions')),
+            // Column::make(__('Number of Users'), 'users_count')
+            //     ->sortable(),
+            // Column::make(__('Actions')),
         ];
     }
 

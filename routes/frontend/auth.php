@@ -17,6 +17,7 @@ use Tabuna\Breadcrumbs\Trail;
  * Frontend Access Controllers
  * All route names are prefixed with 'frontend.auth'.
  */
+
 Route::group(['as' => 'auth.'], function () {
     Route::group(['middleware' => 'auth'], function () {
         // Authentication
@@ -81,22 +82,25 @@ Route::group(['as' => 'auth.'], function () {
     });
 
     Route::group(['middleware' => 'guest'], function () {
-        // Authentication
-        Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
-        Route::post('login', [LoginController::class, 'login']);
+        Route::redirect('/backend', '/backend/login', 301);
+        Route::group(['prefix' => 'backend'], function () {
+            // Authentication
+            Route::get('login', [LoginController::class, 'showLoginForm'])->name('login');
+            Route::post('login', [LoginController::class, 'login']);
 
-        // Registration
-        Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-        Route::post('register', [RegisterController::class, 'register']);
+            // Registration
+            Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+            Route::post('register', [RegisterController::class, 'register']);
 
-        // Password Reset
-        Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
-        Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
-        Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
-        Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+            // Password Reset
+            Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+            Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+            Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+            Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
 
-        // Socialite Routes
-        Route::get('login/{provider}', [SocialController::class, 'redirect'])->name('social.login');
-        Route::get('login/{provider}/callback', [SocialController::class, 'callback']);
+            // Socialite Routes
+            Route::get('login/{provider}', [SocialController::class, 'redirect'])->name('social.login');
+            Route::get('login/{provider}/callback', [SocialController::class, 'callback']);
+        });
     });
 });

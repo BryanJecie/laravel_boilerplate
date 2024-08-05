@@ -1,39 +1,19 @@
-/coverage
-/node_modules
-/public/css
-/public/js
-/public/fonts
-/public/hot
-/public/storage
-/public/mix-manifest.json
-/storage/*.key
-/vendor
-/.vscode
-*.sublime-project
-*.sublime-workspace
-_ide_helper.php
-.DS_Store
-.env
-.env.backup
-.idea
-.php_cs.cache
-.phpunit.result.cache
-.phpstorm.meta.php
-.project
-composer.phar
-coverage.xml
-docker-compose.override.yml
-error.log
-Homestead.json
-Homestead.yaml
+/vendor/
+node_modules/
 npm-debug.log
-output.txt
-Thumbs.db
 yarn-error.log
 
+# Laravel 4 specific
+bootstrap/compiled.php
+# app/storage/
 
+# Laravel 5 & Lumen specific
+# public/storage
+public/hot
 
-/public/js
+# Laravel 5 & Lumen specific with changed public path
+public_html/storage
+public_html/hot
 
 storage/*.key
 .env
@@ -43,14 +23,31 @@ Homestead.json
 .phpunit.result.cache
 
 
-package-lock.json
-/public/mix-manifest.json
-/public/css/backend.css.map
-/public/css/frontend.css.map
 /public/css
+/public/js
+public/js
+/public/fonts
+/public/mix-manifest.json
 /storage/*.key
 
-**/.DS_Store
 
-yarn.lock
-composer.lock
+/.vscode
+*.sublime-project
+*.sublime-workspace
+_ide_helper.php
+.DS_Store
+.env.backup
+.idea
+.php_cs.cache
+.phpstorm.meta.php
+.project
+composer.phar
+coverage.xml
+error.log
+npm-debug.log
+output.txt
+Thumbs.db
+yarn-error.log
+
+docker/logs/
+

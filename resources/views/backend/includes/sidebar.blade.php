@@ -1,22 +1,31 @@
-{{-- c-sidebar-dark --}}
-<div class="c-sidebar  c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
-    {{-- d-lg-down-none --}}
-    <div class="c-sidebar-brand bg-red ">
-        <span class="font-weight-bold">
-            {{ appName() }}
-        </span>
-        {{-- <svg class="c-sidebar-brand-full" width="118" height="46" alt="CoreUI Logo">
-            <use xlink:href="{{ asset('img/brand/coreui.svg#full') }}"></use>
-        </svg> --}}
-        {{-- <svg class="c-sidebar-brand-minimized" width="46" height="46" alt="CoreUI Logo">
-            <use xlink:href="{{ asset('img/brand/coreui.svg#signet') }}"></use>
-        </svg> --}}
+<div class="c-sidebar c-sidebar-dark c-sidebar-fixed c-sidebar-lg-show" id="sidebar">
+    <div class="c-sidebar-brand d-lg-down-none text-uppercase font-weight-bold">
+        {{ appName() }}
     </div><!--c-sidebar-brand-->
 
     <ul class="c-sidebar-nav">
         <li class="c-sidebar-nav-item">
             <x-utils.link class="c-sidebar-nav-link" :href="route('admin.dashboard')" :active="activeClass(Route::is('admin.dashboard'), 'c-active')"
                 icon="c-sidebar-nav-icon cil-speedometer" :text="__('Dashboard')" />
+        </li>
+
+
+        <li class="c-sidebar-nav-item">
+            <x-utils.link class="c-sidebar-nav-link" href="/admin/api/docs" icon="c-sidebar-nav-icon cil-book"
+                :text="__('API Docs')" />
+        </li>
+
+        @if (!app()->environment(['production']))
+            <li class="c-sidebar-nav-item">
+
+                <x-utils.link class="c-sidebar-nav-link" href="/admin/telescope" icon="c-sidebar-nav-icon cil-graph"
+                    :text="__('Telescope')" />
+            </li>
+        @endif
+
+        <li class="c-sidebar-nav-item">
+            <x-utils.link class="c-sidebar-nav-link" href="/admin/horizon" icon="c-sidebar-nav-icon cil-monitor"
+                :text="__('Horizon')" />
         </li>
 
 
@@ -80,9 +89,3 @@
     <button class="c-sidebar-minimizer c-class-toggler" type="button" data-target="_parent"
         data-class="c-sidebar-minimized"></button>
 </div><!--sidebar-->
-
-<style>
-    .bg-brown {
-        background-color: #96725a !important
-    }
-</style>

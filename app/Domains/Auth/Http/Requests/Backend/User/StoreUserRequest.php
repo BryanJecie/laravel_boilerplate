@@ -4,8 +4,8 @@ namespace App\Domains\Auth\Http\Requests\Backend\User;
 
 use App\Domains\Auth\Models\User;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\Rule;
-use LangleyFoxall\LaravelNISTPasswordRules\PasswordRules;
 
 /**
  * Class StoreUserRequest.
@@ -29,18 +29,23 @@ class StoreUserRequest extends FormRequest
      */
     public function rules()
     {
+        // dd($this->all());
+
+
         return [
             'type' => ['required', Rule::in([User::TYPE_ADMIN, User::TYPE_USER])],
             'name' => ['required', 'max:100'],
-            'email' => ['required', 'max:255', 'email', Rule::unique('users')],
-            'password' => ['max:100', PasswordRules::register($this->email)],
+            'email' => ['required', 'max:255', 'email', Rule::unique('mysql_user.users')],
+            'password' => [
+                'max:100', 'required', 'confirmed', 'string', Password::min(6)->mixedCase()->letters()
+            ],
             'active' => ['sometimes', 'in:1'],
-            'email_verified' => ['sometimes', 'in:1'],
-            'send_confirmation_email' => ['sometimes', 'in:1'],
+            // 'email_verified' => ['sometimes', 'in:1'],
+            // 'send_confirmation_email' => ['sometimes', 'in:1'],
             'roles' => ['sometimes', 'array'],
-            'roles.*' => [Rule::exists('roles', 'id')->where('type', $this->type)],
+            'roles.*' => [Rule::exists('mysql_user.roles', 'id')->where('type', $this->type)],
             'permissions' => ['sometimes', 'array'],
-            'permissions.*' => [Rule::exists('permissions', 'id')->where('type', $this->type)],
+            'permissions.*' => [Rule::exists('mysql_user.permissions', 'id')->where('type', $this->type)],
         ];
     }
 

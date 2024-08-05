@@ -5,6 +5,8 @@ namespace App\Exceptions;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Illuminate\Validation\ValidationException;
+use Saloon\Exceptions\Request\Statuses\GatewayTimeoutException;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 use Throwable;
 
@@ -74,6 +76,7 @@ class Handler extends ExceptionHandler
                 ->route(homeRoute())
                 ->withFlashDanger(__('The requested resource was not found.'));
         }
+
 
         return parent::render($request, $exception);
     }

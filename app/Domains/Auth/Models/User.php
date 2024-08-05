@@ -8,7 +8,6 @@ use App\Domains\Auth\Models\Traits\Relationship\UserRelationship;
 use App\Domains\Auth\Models\Traits\Scope\UserScope;
 use App\Domains\Auth\Notifications\Frontend\ResetPasswordNotification;
 use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
-
 use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -18,9 +17,9 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
 use Laravel\Sanctum\HasApiTokens;
+use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Permission\Traits\HasRoles;
-
-
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
 use Laragear\TwoFactor\TwoFactorAuthentication;
 use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
@@ -28,16 +27,19 @@ use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
 /**
  * Class User.
  */
-class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable
+class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable, JWTSubject
 {
-    use HasApiTokens,
+    protected $connection = 'mysql_user';
+
+    use AuthenticationLoggable,
+        TwoFactorAuthentication,
+        HasApiTokens,
         HasFactory,
         HasRoles,
         Impersonate,
         MustVerifyEmailTrait,
         Notifiable,
         SoftDeletes,
-        TwoFactorAuthentication,
         UserAttribute,
         UserMethod,
         UserRelationship,
@@ -45,7 +47,18 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
 
     public const TYPE_ADMIN = 'admin';
     public const TYPE_USER = 'user';
+    public const ADMIN_USER_ID = 1;
 
+    /**
+     * The Public Constructor.
+     *
+     * @var array
+     */
+    public function __construct(array $attributes = array())
+    {
+        $this->table = config('database.connections.mysql_user.database') . '.users';
+        parent::__construct($attributes);
+    }
     /**
      * The attributes that are mass assignable.
      *
@@ -103,6 +116,10 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
      */
     protected $appends = [
         'avatar',
+        'is_online',
+        'full_name',
+        'has_company',
+        'logged_out'
     ];
 
     /**
@@ -112,6 +129,27 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'permissions',
         'roles',
     ];
+
+    /**
+     * Get the identifier that will be stored in the subject claim of the JWT.
+     *
+     * @return mixed
+     */
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
+
+    /**
+     * Return a key value array, containing any custom claims to be added to the JWT.
+     *
+     * @return array
+     */
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
 
     /**
      * Send the password reset notification.
