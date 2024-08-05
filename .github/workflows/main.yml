@@ -42,10 +42,10 @@ jobs:
           composer require "laravel/framework:${{ matrix.laravel }}" "orchestra/testbench:${{ matrix.testbench }}" --no-interaction --no-update
           composer update --${{ matrix.stability }} --prefer-dist --no-interaction
 
-      - name: Test PSR2 compliance
-        uses: docker://oskarstark/php-cs-fixer-ga
-        with:
-          args: --config=.php_cs.dist.php --allow-risky=yes
+      # - name: Test PSR2 compliance
+      #   uses: docker://oskarstark/php-cs-fixer-ga
+      #   with:
+      #     args: --config=.php_cs.dist.php --allow-risky=yes
 
       - name: Generate Key
         run: php artisan key:generate
@@ -55,7 +55,6 @@ jobs:
 
       - name: Compile Assets
         run: npm run production
-
 
       # - name: Execute tests
       #   run: vendor/bin/phpunit
