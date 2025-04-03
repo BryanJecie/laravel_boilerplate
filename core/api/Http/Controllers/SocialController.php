@@ -6,7 +6,9 @@ namespace Core\Guest\Http\Controllers;
 use App\Domains\Auth\Events\User\UserLoggedIn;
 use App\Domains\Auth\Models\User;
 use App\Domains\Auth\Services\UserService;
+use App\Exceptions\GeneralException;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use JWTAuth;
@@ -24,9 +26,9 @@ class SocialController extends Controller
     /**
      * @param $provider
      * @param  UserService  $userService
-     * @return \Illuminate\Http\RedirectResponse
+     * @return RedirectResponse
      *
-     * @throws \App\Exceptions\GeneralException
+     * @throws GeneralException
      */
     public function callback($provider, Request $request, UserService $userService)
     {
@@ -39,7 +41,8 @@ class SocialController extends Controller
         if (!$user->isActive()) {
             auth()->logout();
 
-            throw ValidationException::withMessages(['invalid_credentials' => __('Your account has been deactivated.')]);
+            throw ValidationException::withMessages(['invalid_credentials' => __('Your account has been deactivated.')]
+            );
         }
 
         auth()->login($user);
@@ -53,11 +56,11 @@ class SocialController extends Controller
      * The function "getProviderUser" returns the user information from a social media provider using
      * the given token and scopes.
      *
-     * @param provider The provider parameter is the name of the social media platform or service that
+     * @param  provider The provider parameter is the name of the social media platform or service that
      * you want to authenticate with. Examples include "facebook", "google", "twitter", etc.
-     * @param token The token parameter is the access token obtained from the provider. It is used to
+     * @param  token The token parameter is the access token obtained from the provider. It is used to
      * authenticate and authorize the user's access to their account on the provider's platform.
-     * @param scopes The "scopes" parameter is an optional parameter that allows you to specify the
+     * @param  scopes The "scopes" parameter is an optional parameter that allows you to specify the
      * permissions or access levels that your application requires from the user's social media account.
      * Scopes can vary depending on the social media platform you are integrating with. For example, if
      * you are integrating with Facebook, you might specify scopes

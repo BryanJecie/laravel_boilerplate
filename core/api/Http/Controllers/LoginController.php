@@ -1,15 +1,15 @@
 <?php
 
-namespace Core\Guest\Http\Controllers;
+namespace Core\api\Http\Controllers;
 
 use App\Domains\Auth\Events\User\UserLoggedIn;
 use App\Domains\Auth\Models\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
-use Tymon\JWTAuth\Exceptions\JWTException;
-
 use JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
 use Tymon\JWTAuth\JWT;
 
 
@@ -24,20 +24,17 @@ class LoginController extends Controller
      * The __construct() function is a special function that is automatically called when an object is
      * created
      *
-     * @param JWT jwt The JWT class that will be used to decode the token.
+     * @param  The JWT class that will be used to decode the token.
      */
     public function __construct(JWT $jwt)
     {
         $this->jwt = $jwt;
     }
 
-
     public function login(Request $request)
     {
         try {
-
             if ($request->viaToken) {
-
                 if (!$token = $this->validateToken($request)) {
                     throw ValidationException::withMessages(['invalid_credentials' => __('auth.failed')]);
                 }
@@ -66,9 +63,9 @@ class LoginController extends Controller
      * valid token, return a token for that user. If the user is not logged in and does not have a valid
      * token, return null
      *
-     * @param request The request object
+     * @param  request The request object
      *
-     * @return A JWT token
+     * @return JWT token
      */
     protected function validateToken(Request $request)
     {
@@ -86,7 +83,7 @@ class LoginController extends Controller
             return null;
         }
 
-        if (!hash_equals((string) $request->hash, sha1($user->email))) {
+        if (!hash_equals((string)$request->hash, sha1($user->email))) {
             return null;
         }
 
@@ -104,7 +101,7 @@ class LoginController extends Controller
 
         // This is checking if the user has a valid token.
         // If they do, it will return a token for that user.
-        if (!$user && $this->jwt->setRequest($request)->getToken() && $this->jwt->check()) {;
+        if (!$user && $this->jwt->setRequest($request)->getToken() && $this->jwt->check()) {
             $user = User::findOrFail($this->jwt->payload()->get('sub'));
             if (!$user) {
                 throw ValidationException::withMessages(['invalid_credentials' => __('auth.failed')]);
@@ -117,12 +114,12 @@ class LoginController extends Controller
     /**
      * If the user is not confirmed, log them out and throw an error
      *
-     * @param Request request The request object.
-     * @param user The user model
-     *
-     * @return The authenticated method is being returned.
+     * @param  Request  $request
+     * @param  Request  $user  request The request object.
+     * @return void authenticated method is being returned.
+     * @throws AuthenticationException
      */
-    protected function authenticated(Request $request, $user)
+    protected function authenticated(Request $request, Request $user)
     {
         if (!$user->isActive()) {
             auth()->logout();
@@ -163,4 +160,5 @@ class LoginController extends Controller
         //     auth()->logoutOtherDevices($request->password);
         // }
     }
+
 }

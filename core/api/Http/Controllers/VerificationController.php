@@ -7,9 +7,10 @@ use App\Http\Controllers\Controller;
 use Auth;
 use Core\guest\auth\http\requests\EmailVerificationRequest;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Auth\Events\Verified;
+use Illuminate\Foundation\Auth\VerifiesEmails;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 
@@ -35,7 +36,7 @@ class VerificationController extends Controller
      * The function verifies the email of a user, updates their account status, and returns a response
      * message.
      *
-     * @param EmailVerificationRequest request The  parameter is an instance of the
+     * @param  EmailVerificationRequest request The  parameter is an instance of the
      * EmailVerificationRequest class. It is used to retrieve the user's ID from the route.
      *
      * @return a response with a title, variant, and message.
@@ -46,15 +47,15 @@ class VerificationController extends Controller
         Auth::login($user);
 
         if (!$user) {
-            throw ValidationException::withMessages(['error' =>  __('No user found!')]);
+            throw ValidationException::withMessages(['error' => __('No user found!')]);
         }
 
         if ($user->isVerified()) {
-            throw ValidationException::withMessages(['error' =>  __('Your account is already verified!')]);
+            throw ValidationException::withMessages(['error' => __('Your account is already verified!')]);
         }
 
         if (!$this->toVerify($request)) {
-            throw ValidationException::withMessages(['error' =>  __('Error found!')]);
+            throw ValidationException::withMessages(['error' => __('Error found!')]);
             return;
         }
 
@@ -80,7 +81,7 @@ class VerificationController extends Controller
     /**
      * The function checks if a user's email is verified and performs necessary actions if it is not.
      *
-     * @param request The `` parameter is an instance of the `Illuminate\Http\Request` class.
+     * @param  request The `` parameter is an instance of the `Illuminate\Http\Request` class.
      * It represents an incoming HTTP request and contains information such as the request method,
      * headers, and input data. In this context, it is used to retrieve route parameters and the
      * authenticated user.
@@ -91,12 +92,12 @@ class VerificationController extends Controller
      */
     protected function toVerify($request)
     {
-        if (!hash_equals((string) $request->route('id'), (string) $request->user()->getKey())) {
-            throw new AuthorizationException;
+        if (!hash_equals((string)$request->route('id'), (string)$request->user()->getKey())) {
+            throw new AuthorizationException();
         }
 
-        if (!hash_equals((string) $request->route('hash'), sha1($request->user()->getEmailForVerification()))) {
-            throw new AuthorizationException;
+        if (!hash_equals((string)$request->route('hash'), sha1($request->user()->getEmailForVerification()))) {
+            throw new AuthorizationException();
         }
 
         if ($request->user()->hasVerifiedEmail()) {
@@ -119,15 +120,15 @@ class VerificationController extends Controller
     /**
      * Resend the email verification notification.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse|\Illuminate\Http\RedirectResponse
+     * @param  Request  $request
+     * @return JsonResponse|RedirectResponse
      */
     public function resend(Request $request)
     {
         $requestKeys = collect($request->all())->keys();
 
         if (sizeof($requestKeys) === 0) {
-            throw ValidationException::withMessages(['invalid_credentials' =>  __('User not found!')]);
+            throw ValidationException::withMessages(['invalid_credentials' => __('User not found!')]);
         }
 
         $request->setUserResolver(function () use ($requestKeys) {
@@ -136,7 +137,7 @@ class VerificationController extends Controller
         });
 
         if ($request->user()->hasVerifiedEmail()) {
-            throw ValidationException::withMessages(['invalid_credentials' =>  __('Your account is already verified!')]);
+            throw ValidationException::withMessages(['invalid_credentials' => __('Your account is already verified!')]);
         }
 
         $request->user()->sendEmailVerificationNotification();
