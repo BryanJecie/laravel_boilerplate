@@ -4,7 +4,7 @@
 // use Core\guest\http\controllers\SocialController;
 // use Core\guest\http\controllers\VerificationController;
 
-use Core\Guest\Http\Controllers\LoginController;
+use Core\api\Http\Controllers\LoginController;
 
 Route::post('/login', [LoginController::class, 'login'])->name('api.guest.login');
 // Route::post('/register', [RegisterController::class, 'register']);

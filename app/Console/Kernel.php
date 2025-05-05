@@ -4,7 +4,6 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-use Illuminate\Support\Facades\Log;
 
 /**
  * Class Kernel.
@@ -21,26 +20,13 @@ class Kernel extends ConsoleKernel
     /**
      * Define the application's command schedule.
      *
-     * @param  \Illuminate\Console\Scheduling\Schedule  $schedule
+     * @param  Schedule  $schedule
      * @return void
      */
     protected function schedule(Schedule $schedule)
     {
         // Clear Logs
         $this->clearLogs($schedule);
-    }
-
-
-    /**
-     * Register the commands for the application.
-     *
-     * @return void
-     */
-    protected function commands()
-    {
-        $this->load(__DIR__ . '/Commands');
-
-        require base_path('routes/console.php');
     }
 
     protected function clearLogs(Schedule $schedule)
@@ -57,5 +43,17 @@ class Kernel extends ConsoleKernel
             ->weekly()
             ->days([1, 3, 5])
             ->at('1:00');
+    }
+
+    /**
+     * Register the commands for the application.
+     *
+     * @return void
+     */
+    protected function commands()
+    {
+        $this->load(__DIR__.'/Commands');
+
+        require base_path('routes/console.php');
     }
 }

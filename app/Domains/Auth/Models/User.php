@@ -11,54 +11,42 @@ use App\Domains\Auth\Notifications\Frontend\VerifyEmail;
 use Database\Factories\UserFactory;
 use Illuminate\Auth\MustVerifyEmail as MustVerifyEmailTrait;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Lab404\Impersonate\Models\Impersonate;
+use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
+use Laragear\TwoFactor\TwoFactorAuthentication;
 use Laravel\Sanctum\HasApiTokens;
 use Rappasoft\LaravelAuthenticationLog\Traits\AuthenticationLoggable;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
-
-use Laragear\TwoFactor\TwoFactorAuthentication;
-use Laragear\TwoFactor\Contracts\TwoFactorAuthenticatable;
 
 /**
  * Class User.
  */
 class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenticatable, JWTSubject
 {
-    protected $connection = 'mysql_user';
-
-    use AuthenticationLoggable,
-        TwoFactorAuthentication,
-        HasApiTokens,
-        HasFactory,
-        HasRoles,
-        Impersonate,
-        MustVerifyEmailTrait,
-        Notifiable,
-        SoftDeletes,
-        UserAttribute,
-        UserMethod,
-        UserRelationship,
-        UserScope;
+    use AuthenticationLoggable;
+    use HasApiTokens;
+    use HasFactory;
+    use HasRoles;
+    use Impersonate;
+    use MustVerifyEmailTrait;
+    use Notifiable;
+    use SoftDeletes;
+    use TwoFactorAuthentication;
+    use UserAttribute;
+    use UserMethod;
+    use UserRelationship;
+    use UserScope;
 
     public const TYPE_ADMIN = 'admin';
     public const TYPE_USER = 'user';
     public const ADMIN_USER_ID = 1;
 
-    /**
-     * The Public Constructor.
-     *
-     * @var array
-     */
-    public function __construct(array $attributes = array())
-    {
-        $this->table = config('database.connections.mysql_user.database') . '.users';
-        parent::__construct($attributes);
-    }
     /**
      * The attributes that are mass assignable.
      *
@@ -118,7 +106,6 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'avatar',
         'is_online',
         'full_name',
-        'has_company',
         'logged_out'
     ];
 
@@ -129,6 +116,16 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         'permissions',
         'roles',
     ];
+
+    /**
+     * Create a new factory instance for the model.
+     *
+     * @return Factory
+     */
+    protected static function newFactory()
+    {
+        return UserFactory::new();
+    }
 
     /**
      * Get the identifier that will be stored in the subject claim of the JWT.
@@ -150,7 +147,6 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
         return [];
     }
 
-
     /**
      * Send the password reset notification.
      *
@@ -167,13 +163,13 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
      */
     public function sendEmailVerificationNotification(): void
     {
-        $this->notify(new VerifyEmail);
+        $this->notify(new VerifyEmail());
     }
 
     /**
      * Return true or false if the user can impersonate an other user.
      *
-     * @param void
+     * @param  void
      * @return bool
      */
     public function canImpersonate(): bool
@@ -184,21 +180,11 @@ class User extends Authenticatable implements MustVerifyEmail, TwoFactorAuthenti
     /**
      * Return true or false if the user can be impersonate.
      *
-     * @param void
+     * @param  void
      * @return bool
      */
     public function canBeImpersonated(): bool
     {
         return !$this->isMasterAdmin();
-    }
-
-    /**
-     * Create a new factory instance for the model.
-     *
-     * @return \Illuminate\Database\Eloquent\Factories\Factory
-     */
-    protected static function newFactory()
-    {
-        return UserFactory::new();
     }
 }

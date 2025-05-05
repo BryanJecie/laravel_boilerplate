@@ -8,11 +8,11 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class AccountValidateRequest extends FormRequest
 {
-    public function authorize()
+    public function authorize(): bool
     {
         $user = User::findOrFail($this->route('id'));
 
-        if (!hash_equals((string) $this->route('hash'), sha1($user->email))) {
+        if (!hash_equals((string)$this->route('hash'), sha1($user->email))) {
             return false;
         }
 

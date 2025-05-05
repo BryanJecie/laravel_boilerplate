@@ -22,8 +22,8 @@ trait UserAttribute
         $this->attributes['password'] =
             (strlen($password) === 60 && preg_match('/^\$2y\$/', $password)) ||
             (strlen($password) === 95 && preg_match('/^\$argon2i\$/', $password)) ?
-            $password :
-            Hash::make($password);
+                $password :
+                Hash::make($password);
     }
 
     /**
@@ -93,20 +93,12 @@ trait UserAttribute
         });
     }
 
-    public  function fullName(): Attribute
+    public function fullName(): Attribute
     {
         return new Attribute(function () {
-            $firstName = $this->first_name ?? "";
-            $lastName = $this->last_name ?? "";
+            $firstName = $this->first_name ?? '';
+            $lastName = $this->last_name ?? '';
             return "{$firstName} {$lastName}";
-        });
-    }
-
-    public function hasCompany(): Attribute
-    {
-        return new Attribute(function () {
-            $company = CompanyUser::where('user_id', $this->id)->first();
-            return $company?->company;
         });
     }
 }

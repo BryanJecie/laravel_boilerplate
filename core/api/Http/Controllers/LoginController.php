@@ -24,13 +24,16 @@ class LoginController extends Controller
      * The __construct() function is a special function that is automatically called when an object is
      * created
      *
-     * @param  The JWT class that will be used to decode the token.
+     * @param
      */
     public function __construct(JWT $jwt)
     {
         $this->jwt = $jwt;
     }
 
+    /**
+     * @throws AuthenticationException
+     */
     public function login(Request $request)
     {
         try {
@@ -63,13 +66,13 @@ class LoginController extends Controller
      * valid token, return a token for that user. If the user is not logged in and does not have a valid
      * token, return null
      *
-     * @param  request The request object
+     * @param  request  $request  The request object
      *
-     * @return JWT token
+     * @return string token
      */
     protected function validateToken(Request $request)
     {
-        $request->validate([
+        $request::validate([
             'expires' => ['required'],
             'signature' => ['required'],
             'access_token' => ['required', 'string'],
@@ -93,7 +96,13 @@ class LoginController extends Controller
         );
     }
 
-    protected function getAuthenticateToken(Request $request, User $user)
+    /**
+     * @param  Request  $request
+     * @param  User  $user
+     * @return string
+     * @throws JWTException
+     */
+    protected function getAuthenticateToken(Request $request, ?User $user)
     {
         if (!$user) {
             $user = JWTAuth::parseToken()->authenticate();
